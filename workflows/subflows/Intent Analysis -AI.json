@@ -1,0 +1,386 @@
+{
+  "name": "Intent Analysis - AI v2",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "94d54f75-cc00-4344-b9a5-43df88121e3e",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f11b78e8-3164-49ea-aafa-e4e99af94fac",
+              "name": "intention_message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "c253a691-aefb-4b30-baa4-b9f5a45f91ce",
+              "name": "user_id",
+              "value": "={{ $json.user_id }}",
+              "type": "string"
+            },
+            {
+              "id": "ee92fc79-3790-4d9f-a98d-af8f0c533156",
+              "name": "message_id",
+              "value": "={{ $json.message_id }}",
+              "type": "string"
+            },
+            {
+              "id": "365e8f02-0f63-4013-a628-c10bdff0e82a",
+              "name": "website_id",
+              "value": "={{ $json.website_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        352,
+        0
+      ],
+      "id": "2283acc8-0877-45a5-adad-9f330949320c",
+      "name": "data"
+    },
+    {
+      "parameters": {
+        "inputText": "=Analise a mensagem do usuário e identifique a intenção principal com base nas categorias disponíveis. Caso nenhuma não se encaixe em nenhuma das opções, classifique como conversação\n\nMensagem do usuário: {{ $json.intention_message }}\n\nRegras:\n- Escolha apenas UMA intenção principal.\n- Considere linguagem informal, erros de digitação e mensagens curtas.\n- Nunca escolha \"conversacao\" se houver outra intenção clara.\n- Se o usuário demonstrar frustração ou pedir ajuda direta, priorize \"suporte_humano\".\n\n{{ $json.last_action || $json.status ? \"Contexto adicional:\" : \"\" }}\n{{ $json.last_action ? \"- Última ação do usuário: \" + $json.last_action : \"\" }}\n{{ $json.status ? \"- Status: \" + $json.status : \"\" }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "conversacao",
+              "description": "=Usuário envia uma mensagem inicial genérica ou de abertura de conversa, como cumprimentos simples (oi, olá, bom dia, boa tarde, tudo bem), podendo incluir apenas emojis ou mensagens curtas de teste, sem apresentar qualquer dúvida, solicitação ou contexto adicional. A intenção é apenas iniciar a interação, sem objetivo claro definido."
+            },
+            {
+              "category": "deposito",
+              "description": "Usuário quer realizar um depósito ou entender como funciona o processo de adicionar saldo na plataforma. Inclui dúvidas sobre valor mínimo (R$10,00), tempo de compensação (até 5 minutos via PIX), geração de código PIX, etapas dentro da carteira, problemas com pagamento não creditado ou falhas durante o processo. A intenção é adicionar saldo ou resolver pendências relacionadas ao depósito. Sempre que houver qualquer problema, erro, atraso ou inconsistência relacionada a depósito, o atendimento deve ser direcionado para suporte humano."
+            },
+            {
+              "category": "saque",
+              "description": "Usuário deseja sacar dinheiro ou esclarecer regras e funcionamento da retirada. Inclui dúvidas sobre valor mínimo (R$20,00), taxa de saque (R$3,99), necessidade de saldo mínimo total, tempo de processamento (até 24h em dias úteis), uso e validação de chave PIX (CPF, e-mail, telefone ou aleatória), além de problemas como saque não recebido ou recusado. A intenção é retirar saldo ou entender as condições para isso. Sempre que houver qualquer problema, erro, atraso ou inconsistência relacionada a saque, o atendimento deve ser direcionado para suporte humano."
+            },
+            {
+              "category": "aprender jogar",
+              "description": "Usuário quer aprender como funciona o jogo do bicho e suas mecânicas dentro da plataforma. Inclui explicações sobre os 25 animais e seus grupos numéricos, tipos de aposta (grupo, dezena, centena, milhar, invertidas, combinações), como realizar uma aposta passo a passo, valores mínimos (R$0,10) e funcionamento geral dos sorteios ao longo do dia. A intenção é compreender o produto para começar a jogar."
+            },
+            {
+              "category": "entrar vip",
+              "description": "Usuário demonstra interesse em participar de grupos VIP ou receber dicas exclusivas. Inclui pedidos de link para grupos de WhatsApp, perguntas sobre como entrar, benefícios do grupo, funcionamento dos palpites e vantagens oferecidas. A intenção é ingressar em um ambiente mais engajado com sugestões de apostas."
+            },
+            {
+              "category": "baixar app",
+              "description": "Usuário quer acessar a plataforma via aplicativo ou enfrenta dificuldades técnicas relacionadas a isso. Inclui dúvidas sobre como baixar, instalar, atualizar ou abrir o app, permissões necessárias no dispositivo ou erros durante a instalação. A intenção é conseguir acesso funcional ao aplicativo."
+            },
+            {
+              "category": "palpites do dia",
+              "description": "Usuário solicita sugestões de apostas ou orientação sobre o que jogar. Inclui pedidos diretos de palpites, dicas de números, sugestões do dia, recomendações de apostas ou perguntas abertas como “o que jogar hoje?”. A intenção é obter direcionamento para apostar com base em sugestões."
+            },
+            {
+              "category": "suporte humano",
+              "description": "Usuário relata problemas mais complexos ou situações que exigem intervenção direta, como falhas em depósito, saque, aposta não registrada, erro no histórico, inconsistência de saldo, atrasos, ou qualquer situação crítica não resolvida automaticamente. Também inclui pedidos explícitos para falar com atendente. Sempre que a mensagem envolver problemas relacionados a depósito, saque ou qualquer falha operacional, esta deve ser priorizada para suporte humano. A intenção é escalar o atendimento para resolução manual."
+            },
+            {
+              "category": "resultados",
+              "description": "Usuário pergunta sobre resultados de sorteios, números premiados, horários dos resultados ou consulta de prêmios do jogo do bicho. Inclui mensagens como: \"como vejo o resultado\", \"qual deu hoje\", \"resultado da PT\", \"já saiu o resultado?\", \"deu qual bicho\", \"confere meu jogo\", \"resultado da federal\", \"qual foi o 1º prêmio\". A intenção é consultar resultados ou informações relacionadas aos sorteios."
+            },
+            {
+              "category": "cadastro_acesso",
+              "description": "Usuário deseja criar conta, acessar a plataforma ou receber orientações básicas de entrada na Braza Bicho. Inclui mensagens como: \"como cadastro\", \"quero criar conta\", \"como entrar\", \"fazer login\", \"como acessar\", \"não tenho conta\", \"me cadastra\", \"onde faz conta\", \"como começar\". A intenção é apenas cadastro ou acesso inicial simples, sem envolver problemas técnicos, erros de login, senha, bloqueios ou falhas de acesso."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        576,
+        -128
+      ],
+      "id": "cff20fad-47b9-4e4c-b8ca-35470ac6d177",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1120,
+        480
+      ],
+      "id": "edfa4b17-1d74-4f9f-980f-da306b8dcbce",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "9WFvz5s0Xy4nt2Sk",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.intention_message }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Analise a mensagem do usuário e identifique a intenção principal.\n\nMensagem do usuário: {{ $json.intention_message }}\n\n⚠️ IMPORTANTE:\n- Responda APENAS com JSON válido\n- Não escreva nada fora do JSON\n- O usuário tem em média 50 anos: interprete erros de digitação, ausência de acentos, linguagem emocional e mensagens curtas pelo CONTEXTO, não pela gramática\n\nREGRA ABSOLUTA — suporte_humano SEMPRE vence:\nSe houver QUALQUER sinal de problema, erro, atraso ou frustração → suporte_humano, independente do assunto.\n\nDISTINÇÃO IMPORTANTE — DÚVIDA vs PROBLEMA:\n- Dúvida simples → outra intenção correspondente\n- Problema, erro ou frustração → suporte_humano\n\nPRIORIDADE (seguir ordem):\n1. suporte_humano\n2. deposito\n3. saque\n4. resultado_premio\n5. palpites_do_dia\n6. grupo_vip\n7. baixar_app\n8. aprenda_jogar\n9. cadastro_acesso\n10. conversacao\n\nREGRAS DE INTERPRETAÇÃO:\n- \"nao caiu\", \"nao chegou\", \"sumiu\", \"nao apareceu\", \"nao recebi\", \"nao funciona\", \"nao abre\", \"nao deu\", \"nao foi\", \"nao consigo\", \"cadê\", \"cade\", \"bugou\", \"travou\", \"deu erro\", \"ta errado\", \"to perdido\", \"perdi dinheiro\", \"me ajuda\", \"quero falar com alguem\", \"tem atendente\", \"esqueci minha senha\", \"nao lembro a senha\", \"minha conta nao abre\" → suporte_humano\n- \"pix\", \"depositar\", \"colocar dinheiro\", \"como deposito\", \"adicionar saldo\" → deposito (se não houver problema)\n- \"sacar\", \"retirar\", \"como saco\", \"quero sacar\" → saque (se não houver problema)\n- \"saiu o bicho\", \"ganhei\", \"qual foi o resultado\", \"deu o que\", \"sorteio de hoje\", \"saiu meu numero\" → resultado_premio\n- \"o que jogo hoje\", \"me da um palpite\", \"qual bicho ta saindo\", \"dica do dia\", \"me recomenda\" → palpites_do_dia\n- \"vip\", \"grupo do whatsapp\", \"quero entrar no grupo\" → grupo_vip\n- \"baixar\", \"instalar app\", \"tem app\", \"como baixo\" → baixar_app (se não houver problema)\n- \"como jogar\", \"regras\", \"aprender\", \"me explica o jogo\", \"como funciona o bicho\", \"quais sao os animais\" → aprenda_jogar\n- \"login\", \"cadastro\", \"criar conta\", \"como me cadastro\", \"como entro no site\" → cadastro_acesso (se não houver problema)\n- \"esqueci senha\", \"nao consigo entrar\", \"minha conta nao abre\" → suporte_humano (NÃO cadastro_acesso)\n- cumprimentos simples sem intenção clara → conversacao\n\nFORMATO:\n{\n  \"mensagem\": \"string\",\n  \"suporte_humano\": boolean,\n  \"resultado_premio\": boolean,\n  \"palpites_do_dia\": boolean,\n  \"grupo_vip\": boolean,\n  \"baixar_app\": boolean,\n  \"aprenda_jogar\": boolean,\n  \"saque\": boolean,\n  \"deposito\": boolean,\n  \"cadastro_acesso\": boolean,\n  \"conversacao\": boolean\n}\n\nREGRAS:\n- Apenas UMA intenção deve ser true\n- As outras devem ser false"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2000,
+        0
+      ],
+      "id": "8cc95c3f-9c65-4e1a-8dd2-0ef74136a678",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"mensagem\": \"string\",\n  \"intencoes\": {\n    \"conversacao\": false,\n    \"cadastro_acesso\": false,\n    \"deposito\": false,\n    \"saque\": false,\n    \"aprender_jogar\": false,\n    \"resultado_premio\": false,\n    \"grupo_vip\": false,\n    \"baixar_app\": false,\n    \"palpites_do_dia\": false,\n    \"suporte_humano\": false,\n    \"outro\": false\n  },\n  \"intent_principal\": \"string\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1120,
+        624
+      ],
+      "id": "0e62d979-933f-4bd3-bce7-6c627409c61f",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst intencoes = input.output.intencoes;\n\nreturn [{\n  json: {\n    mensagem: input.output.mensagem,\n    suporte_humano: intencoes?.suporte_humano ?? false,\n    grupo_vip: intencoes?.entrar_vip ?? false,\n    baixar_app: intencoes?.baixar_app ?? false,\n    aprenda_jogar: intencoes?.aprender_jogar ?? false,\n    saque: intencoes?.saque ?? false,\n    deposito: intencoes?.deposito ?? false,\n    conversacao: intencoes?.conversacao ?? false,\n    palpites: intencoes?.palpites_do_dia ?? false,\n    resultados: intencoes?.resultado_premio ?? false,\n    cadastro_acesso: intencoes?.cadastro_acesso ?? false\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2368,
+        0
+      ],
+      "id": "0ffc4d7a-f16a-4603-99e5-ce9ae1e34b12",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "numberInputs": 10
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1616,
+        -128
+      ],
+      "id": "2aaf4d47-76d4-4b27-8064-c0afeafd8573",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "message": "como vejo o resultado",
+          "user_id": "session_0cd5b759-1265-4585-bf32-436fc71aa219",
+          "message_id": "177816173062958",
+          "website_id": "e2f52394-46ee-48ad-a395-fa4edd82162f"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "data": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 9
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 8
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 7
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 6
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 5
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "874fce86-3483-407d-a9fc-220b16e8a769",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ed4104797e963d659a7be7ba813b0757ca6ae5af960610c2458d6d0a5a598543"
+  },
+  "id": "O1JzMPqFjgCyWpzV",
+  "tags": [
+    {
+      "updatedAt": "2026-04-20T20:36:29.974Z",
+      "createdAt": "2026-04-20T20:36:13.455Z",
+      "id": "qeNRFaCzSzp690fp",
+      "name": "BRAZA AI"
+    }
+  ]
+}

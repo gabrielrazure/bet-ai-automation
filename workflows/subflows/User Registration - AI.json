@@ -1,0 +1,219 @@
+{
+  "name": "User Registration - AI",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -848,
+        -112
+      ],
+      "id": "ac6e34dc-42ed-418d-9425-275d40ef43f5",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {},
+      "id": "6e9a7841-e22d-46f7-b6b7-4fe19c6de6d2",
+      "name": "Merge1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        144,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "cadastro_usuarios_duplicate",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "sessionId_conversation",
+              "fieldValue": "={{ $('When Executed by Another Workflow').item.json.session_id }}"
+            },
+            {
+              "fieldId": "user_id",
+              "fieldValue": "={{ $('When Executed by Another Workflow').item.json.name }}"
+            },
+            {
+              "fieldId": "position",
+              "fieldValue": "={{ $('When Executed by Another Workflow').item.json.to }}"
+            }
+          ]
+        }
+      },
+      "id": "26780ae8-6b7c-4025-aa3c-6c95dffe3edb",
+      "name": "Supabase1",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        -32
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "U17NxoutHbsPR7dK",
+          "name": "Braza Bicho - BD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "15926b17-cdce-4511-9dfd-4e17c1412281",
+              "leftValue": "={{ $json.user_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0b1e8937-11ba-4b47-88f7-a13c0e4a3c29",
+      "name": "If1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -288,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "cadastro_usuarios_duplicate",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "user_id",
+              "keyValue": "={{ $json.name }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        -112
+      ],
+      "id": "9b6eb757-c96c-4c9a-8cb9-b1d14282559d",
+      "name": "Get a row",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "U17NxoutHbsPR7dK",
+          "name": "Braza Bicho - BD"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "typeConversation": "",
+          "message": "oi",
+          "voiceMessage": null,
+          "imageMessage": null,
+          "idMessage": "177791558392770",
+          "instanceID": "e2f52394-46ee-48ad-a395-fa4edd82162f",
+          "timestamp": "1777915585760",
+          "FromMe": "user",
+          "to": "user",
+          "name": "visitor209047",
+          "session_id": "session_12d36c5b-f9a2-4d50-8f63-393c75a4b6ce"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Supabase1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "6302630d-e589-419b-bb92-f1110ad2daa8",
+  "meta": {
+    "instanceId": "ed4104797e963d659a7be7ba813b0757ca6ae5af960610c2458d6d0a5a598543"
+  },
+  "id": "Wk4J7kLLBIUFNCPS",
+  "tags": []
+}
